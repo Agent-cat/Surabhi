@@ -38,6 +38,24 @@ const timelineData = [
   },
 ];
 
+const videoTeasers = [
+  {
+    title: "Dance Performances",
+    thumbnail: poster2024,
+    description: "Spectacular dance performances from previous years"
+  },
+  {
+    title: "Music Shows", 
+    thumbnail: poster2023,
+    description: "Mesmerizing musical performances"
+  },
+  {
+    title: "Cultural Events",
+    thumbnail: poster2025, 
+    description: "Highlights of our cultural celebrations"
+  }
+];
+
 const Home = () => {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -156,6 +174,38 @@ const Home = () => {
           environment. This year, we are dedicated to overcoming past challenges
           to provide an enriched experience for participants and attendees.
         </motion.p>
+      </div>
+
+      {/* Video Teasers Section */}
+      <div className="max-w-6xl mx-auto px-4 py-16">
+        <motion.h2
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          className="text-2xl sm:text-3xl md:text-4xl font-saint-carell font-bold mb-12 text-center"
+        >
+          Event Highlights
+        </motion.h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {videoTeasers.map((teaser, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
+              className="bg-purple-900/20 rounded-lg overflow-hidden"
+            >
+              <img
+                src={teaser.thumbnail}
+                alt={teaser.title}
+                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+              />
+              <div className="p-4">
+                <h3 className="text-xl font-bold text-purple-300 mb-2">{teaser.title}</h3>
+                <p className="text-gray-300 text-sm">{teaser.description}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
       <div ref={containerRef} className="max-w-6xl mx-auto px-4 py-16">
