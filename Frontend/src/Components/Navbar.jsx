@@ -93,35 +93,12 @@ const Navbar = () => {
   return (
     <div className="fixed top-0 left-0 w-full z-50 bg-transparent backdrop-blur-sm p-4">
       <div className="flex justify-between items-center">
+        {/* Logo moved to left */}
         <div className="flex gap-2 items-center">
           <h1 className="text-2xl font-bold font-saint-carell text-white hover:text-gray-300 transition-colors">
             SURABHI
           </h1>
         </div>
-
-        {/* Hamburger Menu Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden text-white focus:outline-none"
-        >
-          <div className="w-6 h-6 flex flex-col justify-between">
-            <span
-              className={`block h-0.5 w-6 bg-white transform transition-all duration-300 ${
-                isOpen ? "rotate-45 translate-y-2.5" : ""
-              }`}
-            ></span>
-            <span
-              className={`block h-0.5 w-6 bg-white transition-all duration-300 ${
-                isOpen ? "opacity-0" : ""
-              }`}
-            ></span>
-            <span
-              className={`block h-0.5 w-6 bg-white transform transition-all duration-300 ${
-                isOpen ? "-rotate-45 -translate-y-2.5" : ""
-              }`}
-            ></span>
-          </div>
-        </button>
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex gap-8 font-semibold">
@@ -140,26 +117,52 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Auth Section */}
-        <div className="hidden lg:block">
-          {user ? (
-            <ProfileDropdown />
-          ) : (
-            <div className="flex gap-4">
-              <NavLink
-                to="/login"
-                className="bg-white text-black px-6 py-2 rounded-md hover:bg-gray-200 transition-colors font-medium"
-              >
-                Login
-              </NavLink>
-              <NavLink
-                to="/register"
-                className="bg-transparent text-white border-2 border-white px-6 py-2 rounded-md hover:bg-white hover:text-black transition-all font-medium"
-              >
-                Register
-              </NavLink>
+        {/* Desktop Auth Section and Hamburger Menu */}
+        <div className="flex items-center gap-4">
+          <div className="hidden lg:block">
+            {user ? (
+              <ProfileDropdown />
+            ) : (
+              <div className="flex gap-4">
+                <NavLink
+                  to="/login"
+                  className="bg-white text-black px-6 py-2 rounded-md hover:bg-gray-200 transition-colors font-medium"
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  className="bg-transparent text-white border-2 border-white px-6 py-2 rounded-md hover:bg-white hover:text-black transition-all font-medium"
+                >
+                  Register
+                </NavLink>
+              </div>
+            )}
+          </div>
+
+          {/* Hamburger Menu Button - Moved to right */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="lg:hidden text-white focus:outline-none"
+          >
+            <div className="w-6 h-6 flex flex-col justify-between">
+              <span
+                className={`block h-0.5 w-6 bg-white transform transition-all duration-300 ${
+                  isOpen ? "rotate-45 translate-y-2.5" : ""
+                }`}
+              ></span>
+              <span
+                className={`block h-0.5 w-6 bg-white transition-all duration-300 ${
+                  isOpen ? "opacity-0" : ""
+                }`}
+              ></span>
+              <span
+                className={`block h-0.5 w-6 bg-white transform transition-all duration-300 ${
+                  isOpen ? "-rotate-45 -translate-y-2.5" : ""
+                }`}
+              ></span>
             </div>
-          )}
+          </button>
         </div>
       </div>
 
