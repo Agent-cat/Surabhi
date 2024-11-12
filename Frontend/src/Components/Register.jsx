@@ -13,7 +13,14 @@ const Register = () => {
     phoneNumber: "",
     college: "kluniversity",
     collegeId: "",
+    otherCollegeName: "",
   });
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleVideoLoad = () => {
+    setIsVideoLoaded(true);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +35,7 @@ const Register = () => {
     setFormData((prev) => ({
       ...prev,
       college: value,
+      otherCollegeName: value === "kluniversity" ? "" : prev.otherCollegeName,
     }));
   };
 
@@ -63,6 +71,7 @@ const Register = () => {
 
   const handleSubmit = async (e, paymentId = null) => {
     if (e) e.preventDefault();
+    setIsLoading(true);
 
     try {
       if (formData.college === "other" && !paymentId) {
@@ -73,6 +82,10 @@ const Register = () => {
       const dataToSubmit = {
         ...formData,
         paymentId: paymentId,
+        college:
+          formData.college === "other"
+            ? formData.otherCollegeName
+            : formData.college,
       };
 
       const response = await fetch("http://localhost:5000/api/users/register", {
@@ -91,18 +104,36 @@ const Register = () => {
 
       setToken(data.token);
       setUser(data);
+
+      // Add a smooth transition before navigation
+      const transitionOut = motion.animate(
+        document.querySelector(".register-container"),
+        { opacity: 0, y: -20 },
+        { duration: 0.5 }
+      );
+
+      await transitionOut.finished;
       navigate("/");
     } catch (error) {
       console.error("Registration error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen relative flex items-center justify-center px-4 py-8">
+      {!isVideoLoaded && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black">
+          <div className="text-white text-2xl">Loading...</div>
+        </div>
+      )}
+
       <video
         autoPlay
         loop
         muted
+        onLoadedData={handleVideoLoad}
         className="absolute top-0 left-0 w-full h-full object-cover z-0"
       >
         <source src={intro3} type="video/mp4" />
@@ -113,9 +144,9 @@ const Register = () => {
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={{ opacity: isVideoLoaded ? 1 : 0, y: isVideoLoaded ? 0 : 20 }}
         transition={{ duration: 0.5 }}
-        className="bg-white/10 p-8 rounded-lg backdrop-blur-sm w-full max-w-md relative z-20"
+        className="register-container bg-white/10 p-8 rounded-lg backdrop-blur-sm w-full max-w-md relative z-20"
       >
         <h2 className="text-3xl font-saint-carell text-white text-center mb-8">
           Register
@@ -133,6 +164,7 @@ const Register = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
               required
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -147,6 +179,7 @@ const Register = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
               required
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -161,43 +194,8 @@ const Register = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
               required
+              disabled={isLoading}
             />
-          </div>
-          <div>
-            <label htmlFor="phoneNumber" className="block text-white mb-2">
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              id="phoneNumber"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="college" className="block text-white mb-2">
-              College
-            </label>
-            <select
-              id="college"
-              name="college"
-              value={formData.college}
-              onChange={handleCollegeChange}
-              className="w-full px-4 py-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
-              required
-            >
-              <option value="kluniversity">KL University</option>
-              <option value="other">Other College</option>
-            </select>
-            {formData.college === "other" && (
-              <p className="mt-2 text-sm text-white">
-                Note: Non-KL University students are required to pay ₹500
-                registration fee
-              </p>
-            )}
           </div>
           <div>
             <label htmlFor="collegeId" className="block text-white mb-2">
@@ -211,13 +209,56 @@ const Register = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
               required
+              disabled={isLoading}
             />
           </div>
+          <div>
+            <label htmlFor="college" className="block text-white mb-2">
+              College
+            </label>
+            <select
+              id="college"
+              name="college"
+              value={formData.college}
+              onChange={handleCollegeChange}
+              className="w-full px-4 py-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
+              required
+              disabled={isLoading}
+            >
+              <option value="kluniversity">KL University</option>
+              <option value="other">Other College</option>
+            </select>
+            {formData.college === "other" && (
+              <>
+                <input
+                  type="text"
+                  id="otherCollegeName"
+                  name="otherCollegeName"
+                  value={formData.otherCollegeName}
+                  onChange={handleChange}
+                  placeholder="Enter your college name"
+                  className="w-full px-4 py-2 mt-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
+                  required
+                  disabled={isLoading}
+                />
+                <p className="mt-2 text-sm text-white">
+                  Note: Non-KL University students are required to pay ₹500
+                  registration fee
+                </p>
+              </>
+            )}
+          </div>
+
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300"
+            className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300 disabled:opacity-50"
+            disabled={isLoading || !isVideoLoaded}
           >
-            {formData.college === "other" ? "Proceed to Payment" : "Register"}
+            {isLoading
+              ? "Processing..."
+              : formData.college === "other"
+              ? "Proceed to Payment"
+              : "Register"}
           </button>
         </form>
       </motion.div>

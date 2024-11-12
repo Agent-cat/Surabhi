@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import intro3 from "../assets/intro3.mp4";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { setToken, setUser } from "../utils/auth";
 
 const Login = () => {
@@ -10,6 +10,11 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  const handleVideoLoad = () => {
+    setIsVideoLoaded(true);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,10 +52,17 @@ const Login = () => {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center px-4">
+      {!isVideoLoaded && (
+        <div className="absolute inset-0 bg-black flex items-center justify-center z-50">
+          <div className="text-white text-xl">Loading...</div>
+        </div>
+      )}
+
       <video
         autoPlay
         loop
         muted
+        onLoadedData={handleVideoLoad}
         className="absolute top-0 left-0 w-full h-full object-cover z-0"
       >
         <source src={intro3} type="video/mp4" />
@@ -61,7 +73,7 @@ const Login = () => {
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={{ opacity: isVideoLoaded ? 1 : 0, y: isVideoLoaded ? 0 : 20 }}
         transition={{ duration: 0.5 }}
         className="bg-white/10 p-8 rounded-lg backdrop-blur-sm w-full max-w-md relative z-20"
       >
@@ -100,15 +112,16 @@ const Login = () => {
           <button
             type="submit"
             className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition-colors duration-300"
+            disabled={!isVideoLoaded}
           >
             Login
           </button>
         </form>
         <p className="text-white/60 text-center mt-4">
           Don't have an account?{" "}
-          <a href="/register" className="text-white hover:text-gray-300">
+          <Link to="/register" className="text-white hover:text-gray-300">
             Register here
-          </a>
+          </Link>
         </p>
       </motion.div>
     </div>
