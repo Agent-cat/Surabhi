@@ -264,6 +264,9 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
+      <div className="flex justify-center items-center pt-14">
+        <h1 className="text-4xl font-bold text-purple-400">Events</h1>
+      </div>
       <div className="max-w-6xl mx-auto">
         {flowCharts.map((chart, chartIndex) => (
           <div key={chartIndex} className="mb-12">

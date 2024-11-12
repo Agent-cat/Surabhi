@@ -11,8 +11,8 @@ const Register = () => {
     email: "",
     password: "",
     phoneNumber: "",
-    college: "Your College Name",
-    collegeId: "Your College ID",
+    college: "kluniversity",
+    collegeId: "",
   });
 
   const handleChange = (e) => {
@@ -23,15 +23,64 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleCollegeChange = (e) => {
+    const { value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      college: value,
+    }));
+  };
+
+  const handlePayment = async () => {
     try {
+      // Initialize Razorpay payment
+      const options = {
+        key: "YOUR_RAZORPAY_KEY", // Replace with actual key
+        amount: 50000, // Amount in paise (500 INR)
+        currency: "INR",
+        name: "Surabhi Registration",
+        description: "Registration Fee Payment",
+        handler: async function (response) {
+          // On successful payment, proceed with registration
+          await handleSubmit(null, response.razorpay_payment_id);
+        },
+        prefill: {
+          name: formData.fullName,
+          email: formData.email,
+          contact: formData.phoneNumber,
+        },
+        theme: {
+          color: "#7C3AED",
+        },
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+    } catch (error) {
+      console.error("Payment failed:", error);
+    }
+  };
+
+  const handleSubmit = async (e, paymentId = null) => {
+    if (e) e.preventDefault();
+
+    try {
+      if (formData.college === "other" && !paymentId) {
+        handlePayment();
+        return;
+      }
+
+      const dataToSubmit = {
+        ...formData,
+        paymentId: paymentId,
+      };
+
       const response = await fetch("http://localhost:5000/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSubmit),
       });
 
       const data = await response.json();
@@ -45,7 +94,6 @@ const Register = () => {
       navigate("/");
     } catch (error) {
       console.error("Registration error:", error);
-      // Handle error
     }
   };
 
@@ -133,15 +181,23 @@ const Register = () => {
             <label htmlFor="college" className="block text-white mb-2">
               College
             </label>
-            <input
-              type="text"
+            <select
               id="college"
               name="college"
               value={formData.college}
-              onChange={handleChange}
+              onChange={handleCollegeChange}
               className="w-full px-4 py-2 rounded bg-black border border-white/20 text-white focus:outline-none focus:border-white"
               required
-            />
+            >
+              <option value="kluniversity">KL University</option>
+              <option value="other">Other College</option>
+            </select>
+            {formData.college === "other" && (
+              <p className="mt-2 text-sm text-white">
+                Note: Non-KL University students are required to pay ₹500
+                registration fee
+              </p>
+            )}
           </div>
           <div>
             <label htmlFor="collegeId" className="block text-white mb-2">
@@ -161,7 +217,7 @@ const Register = () => {
             type="submit"
             className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300"
           >
-            Register
+            {formData.college === "other" ? "Proceed to Payment" : "Register"}
           </button>
         </form>
       </motion.div>
