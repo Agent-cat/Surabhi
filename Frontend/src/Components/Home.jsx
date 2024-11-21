@@ -1,13 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import video from "../assets/intro3.mp4";
 import logo from "../assets/logo.png";
 import poster2025 from "../assets/2025.jpg";
 import poster2024 from "../assets/2024.jpg";
 import poster2023 from "../assets/2023.jpg";
 import poster2022 from "../assets/2022.jpg";
+import { loadSlim } from "tsparticles-slim";
+import Particles from "react-tsparticles";
 const timelineData = [
   {
     year: 2025,
@@ -42,18 +44,18 @@ const videoTeasers = [
   {
     title: "Dance Performances",
     thumbnail: poster2024,
-    description: "Spectacular dance performances from previous years"
+    description: "Spectacular dance performances from previous years",
   },
   {
-    title: "Music Shows", 
+    title: "Music Shows",
     thumbnail: poster2023,
-    description: "Mesmerizing musical performances"
+    description: "Mesmerizing musical performances",
   },
   {
     title: "Cultural Events",
-    thumbnail: poster2025, 
-    description: "Highlights of our cultural celebrations"
-  }
+    thumbnail: poster2025,
+    description: "Highlights of our cultural celebrations",
+  },
 ];
 
 const Home = () => {
@@ -95,9 +97,104 @@ const Home = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const particlesInit = useCallback(async (engine) => {
+    await loadSlim(engine);
+  }, []);
+
   return (
     <div className="bg-black text-white">
-      <div className="relative flex flex-col bg-black w-full h-screen items-center justify-center overflow-hidden">
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        options={{
+          fullScreen: {
+            enable: true,
+            zIndex: -100,
+          },
+          background: {
+            color: {
+              value: "transparent",
+            },
+          },
+          fpsLimit: 120,
+          particles: {
+            number: {
+              value: 30,
+              density: {
+                enable: true,
+                value_area: 900,
+              },
+            },
+            color: {
+              value: ["#e9d5ff", "#d8b4fe"], // Light purple colors
+            },
+            shape: {
+              type: "circle",
+            },
+            opacity: {
+              value: 0.5, // Reduced opacity
+              random: false,
+              animation: {
+                enable: true,
+                speed: 1,
+                minimumValue: 0.2,
+                sync: false,
+              },
+            },
+            size: {
+              value: 4,
+              random: {
+                enable: true,
+                minimumValue: 2,
+              },
+              animation: {
+                enable: true,
+                speed: 2,
+                minimumValue: 2,
+                sync: false,
+              },
+            },
+            move: {
+              enable: true,
+              speed: 1.5,
+              direction: "none",
+              random: false,
+              straight: false,
+              outModes: {
+                default: "out",
+              },
+              attract: {
+                enable: false,
+              },
+            },
+          },
+          interactivity: {
+            detectsOn: "canvas",
+            events: {
+              onHover: {
+                enable: true,
+                mode: "grab",
+              },
+              onClick: {
+                enable: true,
+                mode: "repulse",
+              },
+              resize: true,
+            },
+            modes: {
+              grab: {
+                distance: 150,
+                links: {
+                  opacity: 0.8, // Reduced link opacity
+                },
+              },
+            },
+          },
+          detectRetina: true,
+        }}
+        className="absolute inset-0 z-0 hidden md:block pointer-events-none"
+      />
+      <div className="relative flex flex-col bg-black w-full h-screen items-center justify-center overflow-hidden z-10">
         <video
           autoPlay
           loop
@@ -123,7 +220,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="grid grid-cols-4 gap-4 text-center"
+            className="grid grid-cols-4 z-50 gap-4 text-center"
           >
             <div className="bg-purple-900/20 p-4 rounded-lg backdrop-blur-sm">
               <div className="text-4xl md:text-6xl font-bold flip-card">
@@ -165,7 +262,7 @@ const Home = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-sm sm:text-base md:text-lg leading-relaxed text-gray-300 max-w-3xl mx-auto text-center px-4"
+          className="text-sm sm:text-base md:text-lg leading-relaxed text-gray-300 max-w-3xl mx-auto z-50 text-center px-4"
         >
           Surabhi 2025 is a two-day national cultural fest at KL University that
           highlights student creativity through music, dance, drama, and
@@ -181,11 +278,11 @@ const Home = () => {
         <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="text-2xl sm:text-3xl md:text-4xl font-saint-carell font-bold mb-12 text-center"
+          className="text-2xl sm:text-3xl md:text-4xl font-saint-carell font-bold mb-12 text-center z-50"
         >
           Event Highlights
         </motion.h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 z-50 md:grid-cols-3 gap-8">
           {videoTeasers.map((teaser, index) => (
             <motion.div
               key={index}
@@ -197,10 +294,12 @@ const Home = () => {
               <img
                 src={teaser.thumbnail}
                 alt={teaser.title}
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                className="w-full h-48 z-50 object-cover hover:scale-105 transition-transform duration-300"
               />
-              <div className="p-4">
-                <h3 className="text-xl font-bold text-purple-300 mb-2">{teaser.title}</h3>
+              <div className="p-4 ">
+                <h3 className="text-xl font-bold  text-purple-300 mb-2">
+                  {teaser.title}
+                </h3>
                 <p className="text-gray-300 text-sm">{teaser.description}</p>
               </div>
             </motion.div>
@@ -212,7 +311,7 @@ const Home = () => {
         <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="text-2xl sm:text-3xl md:text-4xl font-saint-carell font-bold mb-12 text-center"
+          className="text-2xl sm:text-3xl md:text-4xl font-saint-carell font-bold mb-12 text-center z-50"
         >
           Our Journey
         </motion.h2>
@@ -231,7 +330,7 @@ const Home = () => {
               initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
-              className={`flex flex-col sm:flex-row items-start sm:items-center mb-16 sm:mb-24 ${
+              className={`flex flex-col  sm:flex-row items-start sm:items-center mb-16 sm:mb-24 ${
                 index % 2 === 0 ? "sm:flex-row" : "sm:flex-row-reverse"
               }`}
             >
@@ -239,7 +338,7 @@ const Home = () => {
                 <motion.img
                   src={item.image}
                   alt={item.title}
-                  className="rounded-lg shadow-xl w-full"
+                  className="rounded-lg z-50 shadow-xl w-full"
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
                 />
@@ -267,7 +366,7 @@ const Home = () => {
         <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="text-2xl sm:text-3xl md:text-4xl font-saint-carell font-bold mb-8 sm:mb-12 text-center"
+          className="text-2xl sm:text-3xl md:text-4xl font-saint-carell font-bold mb-8 sm:mb-12 text-center z-50  "
         >
           Find Us Here
         </motion.h2>
@@ -279,7 +378,7 @@ const Home = () => {
             style={{ border: 0 }}
             allowFullScreen=""
             loading="lazy"
-            className="rounded-2xl"
+            className="rounded-2xl z-50"
             referrerPolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>

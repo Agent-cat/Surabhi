@@ -39,61 +39,31 @@ const Register = () => {
     }));
   };
 
-  const handlePayment = async () => {
-    try {
-      // Initialize Razorpay payment
-      const options = {
-        key: "YOUR_RAZORPAY_KEY", // Replace with actual key
-        amount: 50000, // Amount in paise (500 INR)
-        currency: "INR",
-        name: "Surabhi Registration",
-        description: "Registration Fee Payment",
-        handler: async function (response) {
-          // On successful payment, proceed with registration
-          await handleSubmit(null, response.razorpay_payment_id);
-        },
-        prefill: {
-          name: formData.fullName,
-          email: formData.email,
-          contact: formData.phoneNumber,
-        },
-        theme: {
-          color: "#7C3AED",
-        },
-      };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-      const razorpayInstance = new window.Razorpay(options);
-      razorpayInstance.open();
-    } catch (error) {
-      console.error("Payment failed:", error);
+    if (formData.college === "other" && formData.otherCollegeName) {
+      navigate("/payment", {
+        state: {
+          formData: {
+            ...formData,
+            college: formData.otherCollegeName,
+          },
+        },
+      });
+      return;
+    } else {
+      navigate("/");
     }
-  };
 
-  const handleSubmit = async (e, paymentId = null) => {
-    if (e) e.preventDefault();
     setIsLoading(true);
-
     try {
-      if (formData.college === "other" && !paymentId) {
-        handlePayment();
-        return;
-      }
-
-      const dataToSubmit = {
-        ...formData,
-        paymentId: paymentId,
-        college:
-          formData.college === "other"
-            ? formData.otherCollegeName
-            : formData.college,
-      };
-
       const response = await fetch("http://localhost:5000/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSubmit),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -105,7 +75,6 @@ const Register = () => {
       setToken(data.token);
       setUser(data);
 
-      // Add a smooth transition before navigation
       const transitionOut = motion.animate(
         document.querySelector(".register-container"),
         { opacity: 0, y: -20 },
@@ -113,7 +82,9 @@ const Register = () => {
       );
 
       await transitionOut.finished;
-      navigate("/");
+      if (formData.college === "kluniversity") {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Registration error:", error);
     } finally {

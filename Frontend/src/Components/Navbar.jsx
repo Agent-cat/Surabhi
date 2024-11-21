@@ -11,6 +11,28 @@ const Navbar = () => {
   const profileRef = useRef(null);
   const navigate = useNavigate();
 
+  // Add localStorage event listener
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(getUser());
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Check for user updates every 500ms
+    const interval = setInterval(() => {
+      const currentUser = getUser();
+      if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
+        setUser(currentUser);
+      }
+    }, 500);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [user]);
+
   // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -22,6 +44,14 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [isOpen]);
 
   const handleLogout = () => {
     removeToken();
@@ -38,54 +68,91 @@ const Navbar = () => {
         onClick={() => setIsProfileOpen(!isProfileOpen)}
         className="flex items-center gap-2 text-white hover:text-gray-200 transition-colors"
       >
-        <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
           {user.fullName.charAt(0)}
         </div>
-        <span>{user.fullName}</span>
+        <span className="font-medium">{user.fullName}</span>
       </button>
 
       {isProfileOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-          <div className="px-4 py-2 border-b">
-            <p className="text-sm font-medium text-gray-900">{user.fullName}</p>
-            <p className="text-sm text-gray-500">{user.email}</p>
+        <div className="absolute right-0 mt-3 w-72 bg-black/80 backdrop-blur-lg rounded-xl shadow-2xl py-2 z-50 border border-white/10">
+          <div className="px-6 py-4 border-b border-white/10">
+            <p className="text-lg font-semibold text-white">{user.fullName}</p>
+            <p className="text-sm text-gray-300">{user.email}</p>
           </div>
-          <div className="px-4 py-2 border-b">
-            <p className="text-sm text-gray-500">College: {user.college}</p>
-            <p className="text-sm text-gray-500">ID: {user.collegeId}</p>
+          <div className="px-6 py-4 border-b border-white/10">
+            <p className="text-sm text-gray-300 flex justify-between">
+              <span>College:</span>
+              <span className="text-white">{user.college}</span>
+            </p>
+            <p className="text-sm text-gray-300 flex justify-between mt-2">
+              <span>ID:</span>
+              <span className="text-white">{user.collegeId}</span>
+            </p>
+            {user.college !== "kluniversity" && (
+              <p className="text-sm text-gray-300 flex justify-between mt-2">
+                <span>Payment Status:</span>
+                <span
+                  className={`text-${
+                    user.paymentStatus === "approved" ? "green" : "yellow"
+                  }-500`}
+                >
+                  {user.paymentStatus}
+                </span>
+              </p>
+            )}
           </div>
-          <button
-            onClick={handleLogout}
-            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-          >
-            Logout
-          </button>
+          <div className="px-4 py-3">
+            <button
+              onClick={handleLogout}
+              className="w-full bg-gradient-to-r from-purple-500 to-violet-500 text-white py-2.5 rounded-lg font-medium hover:from-purple-600 hover:to-violet-600 transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
 
-  // Mobile profile section
   const MobileProfile = () => (
-    <div className="border-t border-gray-700 pt-4 mt-4">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
+    <div className="border-t border-white/10 pt-6 mt-6">
+      <div className="flex items-center gap-4 mb-6">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
           {user.fullName.charAt(0)}
         </div>
         <div>
-          <p className="text-white font-medium">{user.fullName}</p>
-          <p className="text-gray-400 text-sm">{user.email}</p>
+          <p className="text-white font-semibold text-lg">{user.fullName}</p>
+          <p className="text-gray-300 text-sm">{user.email}</p>
         </div>
       </div>
-      <div className="text-gray-400 text-sm mb-4">
-        <p>College: {user.college}</p>
-        <p>ID: {user.collegeId}</p>
+      <div className="bg-white/5 rounded-lg p-4 mb-6">
+        <p className="text-gray-300 text-sm flex justify-between mb-2">
+          <span>College:</span>
+          <span className="text-white">{user.college}</span>
+        </p>
+        <p className="text-gray-300 text-sm flex justify-between">
+          <span>ID:</span>
+          <span className="text-white">{user.collegeId}</span>
+        </p>
+        {user.college !== "kluniversity" && (
+          <p className="text-gray-300 text-sm flex justify-between mt-2">
+            <span>Payment Status:</span>
+            <span
+              className={`text-${
+                user.paymentStatus === "approved" ? "green" : "yellow"
+              }-500`}
+            >
+              {user.paymentStatus}
+            </span>
+          </p>
+        )}
       </div>
       <button
         onClick={handleLogout}
-        className="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+        className="w-full bg-gradient-to-r from-purple-500 to-violet-500 text-white py-3 rounded-lg font-medium hover:from-purple-600 hover:to-violet-600 transition-all duration-300 flex items-center justify-center gap-2"
       >
-        Logout
+        <span>Logout</span>
       </button>
     </div>
   );
@@ -140,25 +207,25 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Hamburger Menu Button - Moved to right */}
+          {/* Hamburger Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden text-white focus:outline-none"
+            className="lg:hidden text-white focus:outline-none z-50 relative w-10 h-10 rounded-full bg-purple-500/20 backdrop-blur-sm flex items-center justify-center hover:bg-purple-500/30 transition-all duration-300"
           >
-            <div className="w-6 h-6 flex flex-col justify-between">
+            <div className="w-5 h-4 flex flex-col justify-between relative">
               <span
-                className={`block h-0.5 w-6 bg-white transform transition-all duration-300 ${
-                  isOpen ? "rotate-45 translate-y-2.5" : ""
+                className={`block h-0.5 bg-white transform transition-all duration-300 rounded-full ${
+                  isOpen ? "rotate-45 translate-y-1.5 w-5" : "w-5"
                 }`}
               ></span>
               <span
-                className={`block h-0.5 w-6 bg-white transition-all duration-300 ${
-                  isOpen ? "opacity-0" : ""
+                className={`block h-0.5 bg-white transition-all duration-300 rounded-full ${
+                  isOpen ? "opacity-0 w-5" : "w-4 ml-1"
                 }`}
               ></span>
               <span
-                className={`block h-0.5 w-6 bg-white transform transition-all duration-300 ${
-                  isOpen ? "-rotate-45 -translate-y-2.5" : ""
+                className={`block h-0.5 bg-white transform transition-all duration-300 rounded-full ${
+                  isOpen ? "-rotate-45 -translate-y-1.5 w-5" : "w-3 ml-2"
                 }`}
               ></span>
             </div>
@@ -166,42 +233,45 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile Navigation Menu - Sliding from right */}
       <div
-        className={`lg:hidden fixed inset-y-0 left-0 transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } w-64 bg-black transition-transform duration-300 ease-in-out h-screen`}
+        className={`lg:hidden fixed top-0 right-0 h-full w-full md:w-[400px] bg-black/95 backdrop-blur-lg transform transition-transform duration-500 ease-in-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        } z-40 overflow-y-auto`}
       >
-        <div className="flex flex-col p-8 gap-6">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.title}
-              to={link.to}
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-white text-black px-4 py-2 rounded-md transition-all duration-300 ease-in-out text-lg"
-                  : "text-white hover:text-gray-300 transition-all duration-300 ease-in-out text-lg"
-              }
-            >
-              {link.title}
-            </NavLink>
-          ))}
+        <div className="flex flex-col items-center gap-8 p-8 w-full h-full">
+          <div className="w-full flex flex-col gap-6 mt-16">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.title}
+                to={link.to}
+                onClick={() => setIsOpen(false)}
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-white text-black px-6 py-2 rounded-md transition-all duration-300 ease-in-out text-xl w-full text-center"
+                    : "text-white hover:text-gray-300 transition-all duration-300 ease-in-out text-xl w-full text-center"
+                }
+              >
+                {link.title}
+              </NavLink>
+            ))}
+          </div>
+
           {user ? (
             <MobileProfile />
           ) : (
-            <div className="flex flex-col gap-4 mt-4">
+            <div className="flex flex-col gap-4 w-full mt-4">
               <NavLink
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="bg-white text-black px-6 py-2 rounded-md hover:bg-gray-200 transition-colors font-medium text-center"
+                className="bg-white text-black px-6 py-3 rounded-md hover:bg-gray-200 transition-colors font-medium text-center text-lg"
               >
                 Login
               </NavLink>
               <NavLink
                 to="/register"
                 onClick={() => setIsOpen(false)}
-                className="bg-transparent text-white border-2 border-white px-6 py-2 rounded-md hover:bg-white hover:text-black transition-all font-medium text-center"
+                className="bg-transparent text-white border-2 border-white px-6 py-3 rounded-md hover:bg-white hover:text-black transition-all font-medium text-center text-lg"
               >
                 Register
               </NavLink>
@@ -209,14 +279,6 @@ const Navbar = () => {
           )}
         </div>
       </div>
-
-      {/* Overlay */}
-      {isOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
     </div>
   );
 };

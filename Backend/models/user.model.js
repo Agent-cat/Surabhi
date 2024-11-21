@@ -23,9 +23,31 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    phoneNumber: {
-      type: Number,
-      required: true,
+    transactionId: {
+      type: String,
+    },
+    paymentProof: {
+      type: String,
+    },
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    paymentId: String,
+    paymentScreenshot: String,
+    registrationData: {
+      type: {
+        originalPassword: String,
+        college: String,
+        collegeId: String,
+        fullName: String,
+      },
+      required: false,
     },
   },
   {

@@ -45,6 +45,7 @@ const CursorFollower = () => {
     <>
       <div
         ref={cursorRef}
+        className="hidden md:block"
         style={{
           position: "fixed",
           width: "40px",

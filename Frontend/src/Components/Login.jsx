@@ -10,6 +10,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   const handleVideoLoad = () => {
@@ -26,6 +27,8 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
       const response = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
@@ -38,7 +41,18 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Login failed");
+        if (data.error.includes("pending approval")) {
+          setError(
+            "Your registration is pending approval. Please wait for admin confirmation."
+          );
+        } else if (data.error.includes("rejected")) {
+          setError(
+            "Your registration has been rejected. Please contact support."
+          );
+        } else {
+          setError(data.error || "Login failed");
+        }
+        return;
       }
 
       setToken(data.token);
@@ -46,7 +60,7 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      // Handle error (you might want to show an error message to the user)
+      setError("An error occurred during login");
     }
   };
 
@@ -80,6 +94,11 @@ const Login = () => {
         <h2 className="text-3xl font-saint-carell text-white text-center mb-8">
           Login
         </h2>
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-white px-4 py-2 rounded-md mb-6">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-white mb-2">

@@ -10,8 +10,9 @@ export const removeToken = () => {
   localStorage.removeItem("token");
 };
 
-export const setUser = (userData) => {
-  localStorage.setItem("user", JSON.stringify(userData));
+export const setUser = (user) => {
+  localStorage.setItem("user", JSON.stringify(user));
+  window.dispatchEvent(new Event("storage"));
 };
 
 export const getUser = () => {
@@ -21,4 +22,5 @@ export const getUser = () => {
 
 export const removeUser = () => {
   localStorage.removeItem("user");
+  window.dispatchEvent(new Event("storage"));
 };
