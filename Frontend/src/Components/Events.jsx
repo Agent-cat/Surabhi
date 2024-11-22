@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import poster1 from "../assets/poster1.jpg";
+import poster1 from "../assets/2025.jpg";
 import { IoLocationSharp } from "react-icons/io5";
 import { IoCalendarClear } from "react-icons/io5";
 const Events = () => {
@@ -71,16 +71,6 @@ const Events = () => {
           details: {
             title: "Western Dance Solo",
             description: "Individual western dance performances",
-            venue: "Dance Studio",
-            date: "March 18, 2024",
-          },
-          image: poster1,
-        },
-        {
-          title: "Western Mass Solo",
-          details: {
-            title: "Western Dance Competition",
-            description: "Solo western dance battle",
             venue: "Dance Studio",
             date: "March 18, 2024",
           },
