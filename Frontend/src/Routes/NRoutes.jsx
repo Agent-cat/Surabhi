@@ -51,6 +51,7 @@ const NRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route path="/payment" element={<PaymentPage />} />
 
       {/* Admin Route */}
       <Route
