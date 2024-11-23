@@ -7,6 +7,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       lowercase: true,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
     password: {
       type: String,
       required: true,
@@ -37,6 +42,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
+    },
+    registeredEvents: {
+      type: [String],
+      default: [],
     },
     paymentId: String,
     paymentScreenshot: String,

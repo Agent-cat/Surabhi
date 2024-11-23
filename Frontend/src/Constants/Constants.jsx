@@ -15,4 +15,8 @@ export const navLinks = [
     title: "Team",
     to: "/team",
   },
+  {
+    title: "Registered Events",
+    to: "/registered-events",
+  },
 ];

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import poster1 from "../assets/2025.jpg";
 import { IoLocationSharp } from "react-icons/io5";
 import { IoCalendarClear } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 const Events = () => {
   const flowCharts = [
     {
@@ -246,11 +247,121 @@ const Events = () => {
   ];
 
   const [expandedCategory, setExpandedCategory] = useState(null);
+  const [showRegisterPopup, setShowRegisterPopup] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const navigate = useNavigate();
 
   const handleCategoryClick = (chartIndex, catIndex) => {
     const categoryId = `${chartIndex}-${catIndex}`;
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
   };
+
+  const handleRegisterClick = (event) => {
+    setSelectedEvent(event);
+    setShowRegisterPopup(true);
+    setAcceptedTerms(false);
+  };
+
+  const handleRegistrationSubmit = async () => {
+    if (!acceptedTerms) {
+      alert("Please accept the terms and conditions");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login to register for events");
+        navigate("/login");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:5000/api/events/${selectedEvent._id}/categories/${selectedEvent.categoryId}/register`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to register");
+      }
+
+      alert("Successfully registered for event!");
+      setShowRegisterPopup(false);
+      setSelectedEvent(null);
+      setAcceptedTerms(false);
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(error.message || "Failed to register for event");
+    }
+  };
+
+  const RegisterPopup = () => (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-800 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <h3 className="text-2xl font-bold text-purple-400 mb-4">
+            Register for {selectedEvent?.title}
+          </h3>
+
+          <div className="bg-gray-700/50 rounded-lg p-4 mb-6">
+            <h4 className="text-lg font-semibold text-purple-300 mb-2">
+              Terms and Conditions
+            </h4>
+            <div className="text-gray-300 text-sm space-y-2">
+              <p>1. Participants must arrive 30 minutes before the event.</p>
+              <p>2. All participants must carry their college ID cards.</p>
+              <p>3. The decision of the judges will be final.</p>
+              <p>4. No refunds will be provided after registration.</p>
+              <p>5. Participants must follow all event-specific guidelines.</p>
+              <p>
+                6. Any form of malpractice will lead to immediate
+                disqualification.
+              </p>
+              <p>7. Registration is non-transferable.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2 mb-6">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-1"
+            />
+            <label htmlFor="terms" className="text-gray-300 text-sm">
+              I have read and agree to the terms and conditions
+            </label>
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              onClick={handleRegistrationSubmit}
+              disabled={!acceptedTerms}
+              className="flex-1 bg-purple-500 text-white px-6 py-2 rounded-md transition-all duration-300 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Confirm Registration
+            </button>
+            <button
+              onClick={() => setShowRegisterPopup(false)}
+              className="flex-1 bg-gray-600 text-white px-6 py-2 rounded-md transition-all duration-300 hover:bg-gray-700"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -338,7 +449,12 @@ const Events = () => {
                                 </span>
                               </div>
                             </div>
-                            <button className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-md transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                            <button
+                              onClick={() =>
+                                handleRegisterClick(category.details)
+                              }
+                              className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-md transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+                            >
                               Register Now
                             </button>
                           </div>
@@ -352,6 +468,7 @@ const Events = () => {
           </div>
         ))}
       </div>
+      {showRegisterPopup && <RegisterPopup />}
     </div>
   );
 };

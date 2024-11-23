@@ -215,7 +215,7 @@ const AdminPanel = () => {
                     </button>
                     <button
                       onClick={() => handleApproval(user._id, "rejected")}
-                      className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-red-500 to-purple-600 text-white rounded-lg hover:from-red-600 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+                      className="flex-1 sm:flex-none px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
                     >
                       Reject
                     </button>

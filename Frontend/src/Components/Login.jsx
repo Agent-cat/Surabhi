@@ -25,10 +25,8 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
-
     try {
       const response = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
@@ -39,25 +37,12 @@ const Login = () => {
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        if (data.error.includes("pending approval")) {
-          setError(
-            "Your registration is pending approval. Please wait for admin confirmation."
-          );
-        } else if (data.error.includes("rejected")) {
-          setError(
-            "Your registration has been rejected. Please contact support."
-          );
-        } else {
-          setError(data.error || "Login failed");
-        }
-        return;
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        setUser(data);
+        navigate("/");
       }
-
-      setToken(data.token);
-      setUser(data);
-      navigate("/");
     } catch (error) {
       console.error("Login error:", error);
       setError("An error occurred during login");
@@ -99,7 +84,7 @@ const Login = () => {
             {error}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-white mb-2">
               Email
