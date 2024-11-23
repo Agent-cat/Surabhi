@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "../Components/Home";
 import Gallery from "../Components/Gallery";
 import Events from "../Components/Events";
@@ -10,23 +10,54 @@ import ProtectedRoute from "../utils/ProtectedRoute";
 import PaymentPage from "../Components/PaymentPage";
 import AdminPanel from "../Components/AdminPanel";
 import RegisteredEvents from "../Components/RegisteredEvents";
+import AuthRoute from "../utils/AuthRoute";
+import { getUser } from "../utils/auth";
 
 const NRoutes = () => {
+  const user = getUser();
+  const isAdmin = user?.role === "admin";
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/events" element={<Events />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
       <Route path="/team" element={<Team />} />
-      <Route path="/payment" element={<PaymentPage />} />
-      <Route path="/admin" element={<AdminPanel />} />
+
+      {/* Auth Routes - Redirect to home if already logged in */}
+      <Route
+        path="/login"
+        element={
+          <AuthRoute>
+            <Login />
+          </AuthRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <AuthRoute>
+            <Register />
+          </AuthRoute>
+        }
+      />
+
+      {/* Protected Routes */}
       <Route
         path="/registered-events"
         element={
           <ProtectedRoute>
             <RegisteredEvents />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin Route */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            {isAdmin ? <AdminPanel /> : <Navigate to="/" />}
           </ProtectedRoute>
         }
       />

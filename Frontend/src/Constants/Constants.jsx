@@ -20,3 +20,8 @@ export const navLinks = [
     to: "/registered-events",
   },
 ];
+
+export const adminNavLink = {
+  title: "Admin Panel",
+  to: "/admin",
+};

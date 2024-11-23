@@ -102,7 +102,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="bg-black text-white">
+    <div className="bg-black text-white overflow-x-hidden">
       <Particles
         id="tsparticles"
         init={particlesInit}

@@ -44,6 +44,7 @@ export const register = async (req, res) => {
         collegeId: newUser.collegeId,
         fullName: newUser.fullName,
         paymentStatus: newUser.paymentStatus,
+        role: newUser.role,
         token,
       });
     }
@@ -81,6 +82,7 @@ export const register = async (req, res) => {
       message: "Registration pending admin approval",
       email: pendingRegistration.email,
       paymentStatus: "pending",
+      role: pendingRegistration.role,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -136,6 +138,7 @@ export const login = async (req, res) => {
       college: user.college,
       collegeId: user.collegeId,
       fullName: user.fullName,
+      role: user.role,
       token,
     });
   } catch (error) {

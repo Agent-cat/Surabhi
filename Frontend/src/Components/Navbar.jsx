@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { navLinks } from "../Constants/Constants";
+import { navLinks, adminNavLink } from "../Constants/Constants";
 import { NavLink } from "react-router-dom";
 import { getUser, removeToken, removeUser } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,15 @@ const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate();
+
+  const isAdmin = user?.role === "admin";
+  const isAuthenticated = !!user;
+
+  // Modify the desktop navigation section
+  const navigationLinks = [...navLinks];
+  if (isAdmin) {
+    navigationLinks.push(adminNavLink);
+  }
 
   // Add localStorage event listener
   useEffect(() => {
@@ -126,28 +135,6 @@ const Navbar = () => {
           <p className="text-gray-300 text-sm">{user.email}</p>
         </div>
       </div>
-      <div className="bg-white/5 rounded-lg p-4 mb-6">
-        <p className="text-gray-300 text-sm flex justify-between mb-2">
-          <span>College:</span>
-          <span className="text-white">{user.college}</span>
-        </p>
-        <p className="text-gray-300 text-sm flex justify-between">
-          <span>ID:</span>
-          <span className="text-white">{user.collegeId}</span>
-        </p>
-        {user.college !== "kluniversity" && (
-          <p className="text-gray-300 text-sm flex justify-between mt-2">
-            <span>Payment Status:</span>
-            <span
-              className={`text-${
-                user.paymentStatus === "approved" ? "green" : "yellow"
-              }-500`}
-            >
-              {user.paymentStatus}
-            </span>
-          </p>
-        )}
-      </div>
       <button
         onClick={handleLogout}
         className="w-full bg-gradient-to-r from-purple-500 to-violet-500 text-white py-3 rounded-lg font-medium hover:from-purple-600 hover:to-violet-600 transition-all duration-300 flex items-center justify-center gap-2"
@@ -169,7 +156,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex gap-8 font-semibold">
-          {navLinks.map((link) => (
+          {navigationLinks.map((link) => (
             <NavLink
               key={link.title}
               to={link.to}
@@ -235,21 +222,21 @@ const Navbar = () => {
 
       {/* Mobile Navigation Menu - Sliding from right */}
       <div
-        className={`lg:hidden fixed top-0 right-0 h-full w-full md:w-[400px] bg-black/95 backdrop-blur-lg transform transition-transform duration-500 ease-in-out ${
+        className={`lg:hidden fixed top-0 right-0 h-screen w-screen bg-black/95 backdrop-blur-lg transform transition-transform duration-500 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         } z-40 overflow-y-auto`}
       >
         <div className="flex flex-col items-center gap-8 p-8 w-full h-full">
           <div className="w-full flex flex-col gap-6 mt-16">
-            {navLinks.map((link) => (
+            {navigationLinks.map((link) => (
               <NavLink
                 key={link.title}
                 to={link.to}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-white text-black px-6 py-2 rounded-md transition-all duration-300 ease-in-out text-xl w-full text-center"
-                    : "text-white hover:text-gray-300 transition-all duration-300 ease-in-out text-xl w-full text-center"
+                    ? "bg-white text-black px-6 py-3 rounded-xl transition-all duration-300 ease-in-out text-xl w-full text-center shadow-lg"
+                    : "text-white hover:bg-white/10 px-6 py-3 rounded-xl transition-all duration-300 ease-in-out text-xl w-full text-center"
                 }
               >
                 {link.title}
@@ -264,14 +251,14 @@ const Navbar = () => {
               <NavLink
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="bg-white text-black px-6 py-3 rounded-md hover:bg-gray-200 transition-colors font-medium text-center text-lg"
+                className="bg-white text-black px-6 py-3 rounded-xl hover:bg-gray-200 transition-all font-medium text-center text-lg"
               >
                 Login
               </NavLink>
               <NavLink
                 to="/register"
                 onClick={() => setIsOpen(false)}
-                className="bg-transparent text-white border-2 border-white px-6 py-3 rounded-md hover:bg-white hover:text-black transition-all font-medium text-center text-lg"
+                className="bg-transparent text-white border-2 border-white px-6 py-3 rounded-xl hover:bg-white hover:text-black transition-all font-medium text-center text-lg"
               >
                 Register
               </NavLink>
