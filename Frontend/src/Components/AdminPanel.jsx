@@ -90,7 +90,7 @@ const AdminPanel = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-4 sm:p-8">
+    <div className="min-h-screen bg-black p-4 sm:p-8">
       <div className="pt-16 sm:pt-20"></div>
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">

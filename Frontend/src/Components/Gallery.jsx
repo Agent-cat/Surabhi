@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import poster1 from "../assets/2023.jpg";
 import poster2 from "../assets/2024.jpg";
 import poster3 from "../assets/2025.jpg";
 
 const Gallery = () => {
   const [selectedYear, setSelectedYear] = useState("2024");
+  const [selectedImage, setSelectedImage] = useState(null);
   const [photos2025, setPhotos2025] = useState([
     {
       caption: "Coming Soon Preview",
@@ -135,7 +136,7 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-black py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-6xl md:text-7xl text-center font-saint-carell bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent mb-16">
+        <h1 className="text-6xl md:text-4xl text-center font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent mb-7">
           Gallery
         </h1>
 
@@ -214,8 +215,9 @@ const Gallery = () => {
                 {rowIndex % 2 === 0 ? (
                   <>
                     <motion.div
-                      className="col-span-8 aspect-video bg-gradient-to-br from-purple-900/30 to-gray-900 rounded-2xl overflow-hidden relative group border border-white"
+                      className="col-span-8 aspect-video bg-gradient-to-br from-purple-900/30 to-gray-900 rounded-2xl overflow-hidden relative group cursor-pointer"
                       whileHover={{ scale: 1.02 }}
+                      onClick={() => setSelectedImage(items[0])}
                     >
                       {items[0]?.image && (
                         <img
@@ -234,8 +236,9 @@ const Gallery = () => {
                       </div>
                     </motion.div>
                     <motion.div
-                      className="col-span-4 aspect-square bg-gradient-to-br from-purple-900/30 to-gray-900 rounded-2xl overflow-hidden relative group border border-white"
+                      className="col-span-4 aspect-square bg-gradient-to-br from-purple-900/30 to-gray-900 rounded-2xl overflow-hidden relative group cursor-pointer"
                       whileHover={{ scale: 1.02 }}
+                      onClick={() => setSelectedImage(items[1])}
                     >
                       {items[1]?.image && (
                         <img
@@ -257,8 +260,9 @@ const Gallery = () => {
                 ) : (
                   <>
                     <motion.div
-                      className="col-span-4 aspect-square bg-gradient-to-br from-purple-900/30 to-gray-900 rounded-2xl overflow-hidden relative group border border-white"
+                      className="col-span-4 aspect-square bg-gradient-to-br from-purple-900/30 to-gray-900 rounded-2xl overflow-hidden relative group cursor-pointer"
                       whileHover={{ scale: 1.02 }}
+                      onClick={() => setSelectedImage(items[0])}
                     >
                       {items[0]?.image && (
                         <img
@@ -277,8 +281,9 @@ const Gallery = () => {
                       </div>
                     </motion.div>
                     <motion.div
-                      className="col-span-8 aspect-video bg-gradient-to-br from-purple-900/30 to-gray-900 rounded-2xl overflow-hidden relative group border border-white"
+                      className="col-span-8 aspect-video bg-gradient-to-br from-purple-900/30 to-gray-900 rounded-2xl overflow-hidden relative group cursor-pointer"
                       whileHover={{ scale: 1.02 }}
+                      onClick={() => setSelectedImage(items[1])}
                     >
                       {items[1]?.image && (
                         <img
@@ -303,6 +308,61 @@ const Gallery = () => {
           })}
         </div>
       </div>
+
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="relative max-w-6xl  w-full max-h-[80vh]  rounded-2xl overflow-hidden"
+            >
+              <img
+                src={selectedImage.image}
+                alt={selectedImage.caption}
+                className="w-full h-full object-contain"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+                <h3 className="text-2xl font-bold text-purple-300">
+                  {selectedImage.caption}
+                </h3>
+                <p className="text-gray-400 mt-2">
+                  {selectedImage.description}
+                </p>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImage(null);
+                }}
+                className="absolute top-4 right-4 text-white hover:text-purple-400 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

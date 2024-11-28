@@ -12,6 +12,7 @@ import AdminPanel from "../Components/AdminPanel";
 import RegisteredEvents from "../Components/RegisteredEvents";
 import AuthRoute from "../utils/AuthRoute";
 import { getUser } from "../utils/auth";
+import PleaseLogin from "../Components/PleaseLogin";
 
 const NRoutes = () => {
   const user = getUser();
@@ -23,8 +24,6 @@ const NRoutes = () => {
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/events" element={<Events />} />
       <Route path="/team" element={<Team />} />
-
-      {/* Auth Routes - Redirect to home if already logged in */}
       <Route
         path="/login"
         element={
@@ -52,8 +51,7 @@ const NRoutes = () => {
         }
       />
       <Route path="/payment" element={<PaymentPage />} />
-
-      {/* Admin Route */}
+      <Route path="/please-login" element={<PleaseLogin />} />
       <Route
         path="/admin"
         element={

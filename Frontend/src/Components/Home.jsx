@@ -119,7 +119,7 @@ const Home = () => {
           fpsLimit: 120,
           particles: {
             number: {
-              value: 30,
+              value: 50,
               density: {
                 enable: true,
                 value_area: 900,

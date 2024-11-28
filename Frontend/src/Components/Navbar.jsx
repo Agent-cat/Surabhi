@@ -220,9 +220,8 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation Menu - Sliding from right */}
       <div
-        className={`lg:hidden fixed top-0 right-0 h-screen w-screen bg-black/95 backdrop-blur-lg transform transition-transform duration-500 ease-in-out ${
+        className={`lg:hidden fixed top-0 right-0 h-screen w-screen bg-black backdrop-blur-lg transform transition-transform duration-500 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         } z-40 overflow-y-auto`}
       >
@@ -235,8 +234,8 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-white text-black px-6 py-3 rounded-xl transition-all duration-300 ease-in-out text-xl w-full text-center shadow-lg"
-                    : "text-white hover:bg-white/10 px-6 py-3 rounded-xl transition-all duration-300 ease-in-out text-xl w-full text-center"
+                    ? "bg-purple-800 text-white px-6 py-3 rounded-xl transition-all duration-300 ease-in-out text-xl w-full text-center shadow-lg"
+                    : "text-white hover:bg-purple-500/20 px-6 py-3 rounded-xl transition-all duration-300 ease-in-out text-xl w-full text-center"
                 }
               >
                 {link.title}
