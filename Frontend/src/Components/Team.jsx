@@ -509,171 +509,180 @@ const Team = () => {
         Our Team
       </h1>
 
-      {/* Core Team Section */}
-      <div className="mb-12 md:mb-20">
-        <h2 className="text-2xl md:text-3xl font-semibold mb-6 md:mb-8 text-center text-purple-400">
-          Zero Order
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
-          {Object.entries(coreTeamMembers).map(([position, member]) => (
-            <motion.div
-              key={position}
-              whileHover={{ scale: 1.05 }}
-              className="bg-gray-900 rounded-lg p-4 text-center border border-white/30"
+      {/* Desktop Committee Selection */}
+      <div className="hidden md:flex justify-center mb-8">
+        <div className="flex flex-wrap gap-4 justify-center">
+          <button
+            onClick={() => setSelectedMember(null)}
+            className={`px-6 py-3 rounded-lg transition-all text-sm md:text-base ${
+              !selectedMember
+                ? "bg-purple-500 text-white"
+                : "bg-gray-900 hover:bg-purple-900/30 border border-white/30"
+            }`}
+          >
+            Zero Order
+          </button>
+          {teamCategories.slice(5).map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedMember(category)}
+              className={`px-6 py-3 rounded-lg transition-all text-sm md:text-base ${
+                selectedMember === category
+                  ? "bg-purple-500 text-white"
+                  : "bg-gray-900 hover:bg-purple-900/30 border border-white/30"
+              }`}
             >
-              <img
-                src={poster2024}
-                alt={member.name}
-                className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto mb-4 object-cover"
-              />
-              <h3 className="font-semibold text-base md:text-lg mb-2 text-purple-300">
-                Venkat Vuddagiri
-              </h3>
-              <p className="text-gray-400 text-xs md:text-sm mb-2">
-                {position}
-              </p>
-              <p className="text-gray-500 text-xs mb-4">{member.description}</p>
-              <div className="flex justify-center gap-4">
-                <a
-                  href={member.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaInstagram className="text-lg md:text-xl hover:text-purple-500" />
-                </a>
-                <a
-                  href={member.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaLinkedin className="text-lg md:text-xl hover:text-purple-500" />
-                </a>
-              </div>
-            </motion.div>
+              {category}
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Committee Sections */}
-      <div>
-        <h2 className="text-2xl md:text-3xl font-semibold mb-6 md:mb-8 text-center text-purple-400">
-          Committees
-        </h2>
+      {/* Mobile Dropdown */}
+      <div className="md:hidden mb-6 relative">
+        <button
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="w-full bg-gray-900 px-4 py-3 rounded-lg flex justify-between items-center border border-white/30"
+        >
+          <span>{selectedMember || "Zero Order"}</span>
+          <FaChevronDown
+            className={`transform transition-transform ${
+              isDropdownOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
 
-        {/* Mobile Dropdown */}
-        <div className="md:hidden mb-6 relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="w-full bg-gray-900 px-4 py-3 rounded-lg flex justify-between items-center border border-white/30"
-          >
-            <span>{selectedMember || "Select Committee"}</span>
-            <FaChevronDown
-              className={`transform transition-transform ${
-                isDropdownOpen ? "rotate-180" : ""
+        {isDropdownOpen && (
+          <div className="mt-2 bg-gray-900 rounded-lg overflow-hidden absolute left-0 right-0 z-50 max-h-60 overflow-y-auto border border-white/30 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-900">
+            <button
+              onClick={() => {
+                setSelectedMember(null);
+                setIsDropdownOpen(false);
+              }}
+              className={`w-full text-left px-4 py-3 ${
+                !selectedMember
+                  ? "bg-purple-500 text-white"
+                  : "hover:bg-purple-900/30"
               }`}
-            />
-          </button>
-
-          {isDropdownOpen && (
-            <div className="mt-2 bg-gray-900 rounded-lg overflow-hidden absolute left-0 right-0 z-50 max-h-60 overflow-y-auto border border-white/30 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-900">
-              {teamCategories.slice(5).map((category) => (
-                <button
-                  key={category}
-                  onClick={() => handleMemberSelect(category)}
-                  className={`w-full text-left px-4 py-3 ${
-                    selectedMember === category
-                      ? "bg-purple-500 text-white"
-                      : "hover:bg-purple-900/30"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-6 md:gap-8">
-          {/* Desktop Left side buttons */}
-          <div className="hidden md:block md:w-1/4 lg:w-1/5">
-            <div className="flex flex-col gap-3 md:gap-4">
-              {teamCategories.slice(5).map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedMember(category)}
-                  className={`text-left px-4 md:px-6 py-3 md:py-4 rounded-lg transition-all text-sm md:text-base ${
-                    selectedMember === category
-                      ? "bg-purple-500 text-white"
-                      : "bg-gray-900 hover:bg-purple-900/30 border border-white/30"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+            >
+              Zero Order
+            </button>
+            {teamCategories.slice(5).map((category) => (
+              <button
+                key={category}
+                onClick={() => handleMemberSelect(category)}
+                className={`w-full text-left px-4 py-3 ${
+                  selectedMember === category
+                    ? "bg-purple-500 text-white"
+                    : "hover:bg-purple-900/30"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
-
-          {/* Member cards */}
-          <div className="w-full md:w-3/4 lg:w-2/3">
-            <AnimatePresence mode="wait">
-              {selectedMember && (
-                <motion.div
-                  key={selectedMember}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="rounded-lg p-6 md:p-8"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {committeeMembers[selectedMember].members.map(
-                      (member, index) => (
-                        <div
-                          key={index}
-                          className="text-center bg-gray-900 rounded-lg p-4 border border-white/30"
-                        >
-                          <img
-                            src={poster2024}
-                            alt={member.name}
-                            className="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto mb-4 object-cover"
-                          />
-                          <h3 className="text-xl font-semibold mb-2 text-purple-300">
-                            Venkat Vuddagiri
-                          </h3>
-                          <p className="text-gray-400 text-sm mb-2">
-                            {member.role}
-                          </p>
-                          <p className="text-gray-500 text-sm mb-4">
-                            {member.description}
-                          </p>
-                          <div className="flex justify-center gap-4">
-                            <a
-                              href={member.instagram}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:text-purple-500"
-                            >
-                              <FaInstagram className="text-xl" />
-                            </a>
-                            <a
-                              href={member.linkedin}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:text-purple-500"
-                            >
-                              <FaLinkedin className="text-xl" />
-                            </a>
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+        )}
       </div>
+
+      {/* Zero Order Section */}
+      {!selectedMember && (
+        <div className="mb-12 md:mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
+            {Object.entries(coreTeamMembers).map(([position, member]) => (
+              <motion.div
+                key={position}
+                whileHover={{ scale: 1.05 }}
+                className="bg-gray-900 rounded-lg p-4 text-center border border-white/30"
+              >
+                <img
+                  src={poster2024}
+                  alt={member.name}
+                  className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto mb-4 object-cover"
+                />
+                <h3 className="font-semibold text-base md:text-lg mb-2 text-purple-300">
+                  Venkat Vuddagiri
+                </h3>
+                <p className="text-gray-400 text-xs md:text-sm mb-2">
+                  {position}
+                </p>
+                <p className="text-gray-500 text-xs mb-4">
+                  {member.description}
+                </p>
+                <div className="flex justify-center gap-4">
+                  <a
+                    href={member.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaInstagram className="text-lg md:text-xl hover:text-purple-500" />
+                  </a>
+                  <a
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaLinkedin className="text-lg md:text-xl hover:text-purple-500" />
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Committee Members Section */}
+      {selectedMember && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedMember}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="rounded-lg p-6 md:p-8"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {committeeMembers[selectedMember].members.map((member, index) => (
+                <div
+                  key={index}
+                  className="text-center bg-gray-900 rounded-lg p-4 border border-white/30"
+                >
+                  <img
+                    src={poster2024}
+                    alt={member.name}
+                    className="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto mb-4 object-cover"
+                  />
+                  <h3 className="text-xl font-semibold mb-2 text-purple-300">
+                    Venkat Vuddagiri
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-2">{member.role}</p>
+                  <p className="text-gray-500 text-sm mb-4">
+                    {member.description}
+                  </p>
+                  <div className="flex justify-center gap-4">
+                    <a
+                      href={member.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-purple-500"
+                    >
+                      <FaInstagram className="text-xl" />
+                    </a>
+                    <a
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-purple-500"
+                    >
+                      <FaLinkedin className="text-xl" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      )}
     </div>
   );
 };

@@ -1,60 +1,68 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { IoLocationSharp, IoCalendarClear, IoTime } from "react-icons/io5";
+import axios from "axios";
 
 const RegisteredEvents = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchRegisteredEvents();
-  }, []);
-
   const fetchRegisteredEvents = async () => {
     try {
-      const response = await fetch(
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
         "http://localhost:5000/api/events/registered",
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.status === 200) {
+        setEvents(response.data);
       }
-
-      const data = await response.json();
-      setEvents(Array.isArray(data) ? data : []);
-      setError(null);
     } catch (error) {
       console.error("Error fetching registered events:", error);
-      setError("Failed to load registered events");
-      setEvents([]);
+      setError(
+        error.response?.data?.message || "Failed to fetch registered events"
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchRegisteredEvents();
+  }, []);
+
   const handleUnregister = async (eventId, categoryId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/events/${eventId}/categories/${categoryId}/unregister`,
+        "http://localhost:5000/api/events/unregister",
         {
-          method: "DELETE",
+          method: "POST",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          body: JSON.stringify({
+            eventId,
+            categoryId,
+          }),
         }
       );
 
-      if (response.ok) {
-        fetchRegisteredEvents();
+      if (!response.ok) {
+        throw new Error("Failed to unregister from event");
       }
+
+      // Refresh events list after successful unregistration
+      fetchRegisteredEvents();
     } catch (error) {
       console.error("Error unregistering:", error);
+      alert(error.message);
     }
   };
 
@@ -62,6 +70,20 @@ const RegisteredEvents = () => {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white p-8">
+        <div className="max-w-6xl mx-auto pt-20">
+          <div className="text-center py-12">
+            <p className="text-red-400 text-lg">
+              Error: {error}. Please try again later.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -83,26 +105,35 @@ const RegisteredEvents = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
               <motion.div
-                key={`${event.eventId}-${event.categoryId}`}
+                key={`${event._id}-${event.categoryId}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gray-800/50 rounded-lg p-6 backdrop-blur-sm border border-purple-500/20"
+                className="bg-gray-900 rounded-xl p-6"
               >
-                <h3 className="text-xl font-bold text-purple-300 mb-2">
-                  {event.category.details.title}
+                <img
+                  src={event.category.image}
+                  alt={event.category.title}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
+                <h3 className="text-xl font-semibold mb-2">
+                  {event.name} - {event.category.title}
                 </h3>
-                <p className="text-gray-300 mb-4">
-                  {event.category.details.description}
-                </p>
-                <div className="space-y-2 text-sm text-gray-400">
-                  <p>Venue: {event.category.details.venue}</p>
-                  <p>Date: {event.category.details.date}</p>
-                  <p>Time: {event.category.timeSlot}</p>
+                <div className="space-y-2 text-gray-300 mb-4">
+                  <p className="flex items-center gap-2">
+                    <IoLocationSharp />
+                    {event.category.details.venue}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <IoCalendarClear />
+                    {event.category.details.date}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <IoTime />
+                    {event.category.details.time}
+                  </p>
                 </div>
                 <button
-                  onClick={() =>
-                    handleUnregister(event.eventId, event.categoryId)
-                  }
+                  onClick={() => handleUnregister(event._id, event.categoryId)}
                   className="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors"
                 >
                   Unregister

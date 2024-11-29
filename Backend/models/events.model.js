@@ -1,21 +1,17 @@
 import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema({
-  name: {
+  categoryName: {
     type: String,
     required: true,
   },
-  categories: [
+  Events: [
     {
       title: {
         type: String,
         required: true,
       },
       details: {
-        title: {
-          type: String,
-          required: true,
-        },
         description: {
           type: String,
           required: true,

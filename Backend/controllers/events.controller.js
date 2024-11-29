@@ -10,11 +10,10 @@ export const createEvent = async (req, res) => {
   }
 };
 
-// Get all events
 export const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find().populate(
-      "categories.registeredStudents",
+      "Events.registeredStudents",
       "fullName college collegeId email termsandconditions"
     );
     res.status(200).json(events);
@@ -23,11 +22,10 @@ export const getAllEvents = async (req, res) => {
   }
 };
 
-// Get a single event by ID
 export const getEventById = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id).populate(
-      "categories.registeredStudents",
+      "Events.registeredStudents",
       "fullName college collegeId email termsandconditions"
     );
     if (!event) {
@@ -39,7 +37,6 @@ export const getEventById = async (req, res) => {
   }
 };
 
-// Update an event
 export const updateEvent = async (req, res) => {
   try {
     const updatedEvent = await Event.findByIdAndUpdate(
@@ -47,7 +44,7 @@ export const updateEvent = async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     ).populate(
-      "categories.registeredStudents",
+      "Events.registeredStudents",
       "fullName college collegeId email termsandconditions"
     );
     if (!updatedEvent) {
@@ -59,7 +56,6 @@ export const updateEvent = async (req, res) => {
   }
 };
 
-// Delete an event
 export const deleteEvent = async (req, res) => {
   try {
     const event = await Event.findByIdAndDelete(req.params.id);
@@ -75,25 +71,123 @@ export const deleteEvent = async (req, res) => {
 // Add this new function
 export const registerForEvent = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { categoryId, eventId } = req.params;
     const userId = req.user._id; // You'll need to add authentication middleware
 
-    const event = await Event.findById(id);
+    const event = await Event.findById(categoryId);
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: "Category not found" });
     }
 
-    // Check if user is already registered
-    if (event.categories.registeredStudents.includes(userId)) {
+    const specificEvent = event.Events.id(eventId);
+    if (!specificEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if (specificEvent.registeredStudents.includes(userId)) {
       return res
         .status(400)
         .json({ message: "Already registered for this event" });
     }
 
-    event.categories.registeredStudents.push(userId);
+    specificEvent.registeredStudents.push(userId);
     await event.save();
 
     res.status(200).json({ message: "Successfully registered for event" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const createEventInCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const category = await Event.findById(categoryId);
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    category.Events.push({
+      title: req.body.title,
+      details: req.body.details,
+      image: req.body.image,
+      termsandconditions: req.body.termsandconditions,
+    });
+
+    await category.save();
+    res.status(201).json(category);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const updateEventInCategory = async (req, res) => {
+  try {
+    const { categoryId, eventId } = req.params;
+    const category = await Event.findById(categoryId);
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    const event = category.Events.id(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    event.title = req.body.title;
+    event.details = req.body.details;
+    event.image = req.body.image;
+    event.termsandconditions = req.body.termsandconditions;
+
+    await category.save();
+    res.status(200).json(category);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Add this new controller function
+export const createCategory = async (req, res) => {
+  try {
+    const { categoryName } = req.body;
+
+    if (!categoryName) {
+      return res.status(400).json({ message: "Category name is required" });
+    }
+
+    // Check if category already exists
+    const existingCategory = await Event.findOne({ categoryName });
+    if (existingCategory) {
+      return res.status(400).json({ message: "Category already exists" });
+    }
+
+    const newCategory = new Event({
+      categoryName,
+      Events: [],
+    });
+
+    const savedCategory = await newCategory.save();
+    console.log("Category saved:", savedCategory); // Debug log
+
+    res.status(201).json(savedCategory);
+  } catch (error) {
+    console.error("Error creating category:", error);
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Optional: Add delete category functionality
+export const deleteCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const deletedCategory = await Event.findByIdAndDelete(categoryId);
+
+    if (!deletedCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

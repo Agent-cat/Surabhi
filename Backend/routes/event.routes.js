@@ -6,6 +6,9 @@ import {
   updateEvent,
   deleteEvent,
   registerForEvent,
+  createEventInCategory,
+  updateEventInCategory,
+  createCategory,
 } from "../controllers/events.controller.js";
 
 const router = express.Router();
@@ -27,5 +30,12 @@ router.delete("/:id", deleteEvent);
 
 // Register for an event
 router.put("/:id/register", registerForEvent);
+
+// Add these new routes
+router.post("/:categoryId/events", createEventInCategory);
+router.put("/:categoryId/events/:eventId", updateEventInCategory);
+
+// Add this new route
+router.post("/category", createCategory);
 
 export default router;
